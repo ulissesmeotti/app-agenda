@@ -2,11 +2,8 @@ package com.example.agendaservicos;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.room.Room;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +11,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import com.example.agendaservicos.dao.ItemAgendamentoDAO;
 import com.example.agendaservicos.database.Banco;
 import com.example.agendaservicos.database.DatabaseClient;
@@ -38,6 +35,7 @@ import com.example.agendaservicos.dao.ServicoDAO;
 import com.example.agendaservicos.dados.Agendamento;
 import com.example.agendaservicos.dados.ItemAgendamento;
 import com.example.agendaservicos.dados.Servico;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,10 +47,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class TelaAgendamento extends AppCompatActivity {
+
     public static SimpleDateFormat dtFormater = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     Agendamento agendamento;
-
     ArrayAdapter<ItemAgendamento> adapter;
     ArrayList<ItemAgendamento> itemAgendamentos;
     boolean editando = false;
@@ -69,35 +67,33 @@ public class TelaAgendamento extends AppCompatActivity {
     Servico servicoSelecionado;
     Button btnCancelar;
 
-
     Date dataAgendamento = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tela_agendamento);
-        lista = (ListView) findViewById(R.id.lista_servico);
-        edCliente = (EditText) findViewById(R.id.ed_nome_cliente);
-        edEndereco = (EditText) findViewById(R.id.ed_endereco);
-        edQuantidade = (EditText) findViewById(R.id.ed_quantidade);
-        txtDataHora = (TextView) findViewById(R.id.data_hora);
-        txtUnidade = (TextView) findViewById(R.id.txt_unidade);
-        txtValor = (TextView) findViewById(R.id.txt_valor);
-        opcoes_servico = (Spinner) findViewById(R.id.opcoes_servico);
-        btnCancelar = (Button) findViewById(R.id.btn_cancelar);
+
+        lista = findViewById(R.id.lista_servico);
+        edCliente = findViewById(R.id.ed_nome_cliente);
+        edEndereco = findViewById(R.id.ed_endereco);
+        edQuantidade = findViewById(R.id.ed_quantidade);
+        txtDataHora = findViewById(R.id.data_hora);
+        txtUnidade = findViewById(R.id.txt_unidade);
+        txtValor = findViewById(R.id.txt_valor);
+        opcoes_servico = findViewById(R.id.opcoes_servico);
+        btnCancelar = findViewById(R.id.btn_cancelar);
 
         Intent intent = getIntent();
         agendamento = (Agendamento) intent.getSerializableExtra("agendamento");
 
         itemAgendamentos = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice,
-                itemAgendamentos);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, itemAgendamentos);
         lista.setAdapter(adapter);
 
         edQuantidade.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
@@ -105,10 +101,8 @@ public class TelaAgendamento extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-            }
+            public void afterTextChanged(Editable editable) {}
         });
-
 
         opcoes_servico.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -121,9 +115,7 @@ public class TelaAgendamento extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -134,8 +126,6 @@ public class TelaAgendamento extends AppCompatActivity {
                 return true;
             }
         });
-
-
     }
 
     @Override
@@ -155,127 +145,97 @@ public class TelaAgendamento extends AppCompatActivity {
             carregarItensAgendamento(agendamento.getId());
             btnCancelar.setVisibility(View.VISIBLE);
         }
-
     }
 
+    @Override
     public void onStop() {
         bd.close();
         super.onStop();
     }
 
-    public void lerData(View view) {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this);
-        datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int ano, int mes, int dia) {
-                dataAgendamento = new Date(ano - 1900, mes, dia);
-
-                showTimePickerDialog();
-            }
-        });
-        datePickerDialog.show();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_principal, menu);
+        return true;
     }
 
-    private void showTimePickerDialog() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hora, int minuto) {
-                if (dataAgendamento != null) {
-                    dataAgendamento.setHours(hora);
-                    dataAgendamento.setMinutes(minuto);
-                    dataAgendamento.setSeconds(0);
-                    txtDataHora.setText(dtFormater.format(dataAgendamento));
-                }
-            }
-        }, 0, 0, true);
-        timePickerDialog.show();
+    public boolean cadastrarServicos(MenuItem item) {
+        Toast.makeText(this, "Cadastrar Serviços clicado", Toast.LENGTH_SHORT).show();
+        return true;
     }
 
-
-    public void adicionar(View v) {
-        if (servicoSelecionado != null && !edQuantidade.getText().toString().isEmpty()) {
-            double quantidade = Double.parseDouble(edQuantidade.getText().toString());
-            double valorUnitario = servicoSelecionado.getValor();
-            double valorTotal = quantidade * valorUnitario;
-            ItemAgendamento itemAgendamento = new ItemAgendamento();
-            itemAgendamento.setId_servico(servicoSelecionado.getId());
-            itemAgendamento.setQuantidade(quantidade);
-            itemAgendamento.setValorItem(valorTotal);
-            itemAgendamento.setServico(servicoSelecionado);
-            itemAgendamentos.add(itemAgendamento);
-            adapter.notifyDataSetChanged();
-            edQuantidade.setText("1");
-        }
+    public boolean sair(MenuItem item) {
+        Toast.makeText(this, "Saindo...", Toast.LENGTH_SHORT).show();
+        finish(); // Fecha a activity
+        return true;
     }
 
+    public void abrirDialog(MenuItem mi) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_edicao, null);
 
-    public void confirmar(View v) {
-        long agendamentoId;
+        double valorCalculado = calcularValorTotal();
 
-        if (dataAgendamento == null) {
-            return;
-        }
+        txtValorTotal = dialogView.findViewById(R.id.txt_valor_total);
+        txtValorTotal.setText("Valor restante: " + String.format("%.2f", valorCalculado));
 
-        Agendamento ag = editando ? agendamento : new Agendamento();
-        ag.setNomeCliente(edCliente.getText().toString());
-        ag.setEndereco(edEndereco.getText().toString());
-        ag.setDataHora(dataAgendamento);
-        ag.setValorTotal(calcularValorTotal());
-        agendamentoId = dao.inserir(ag);
+        EditText txtValorRecebido = dialogView.findViewById(R.id.valor_recebido);
 
-
-        new Thread() {
-            public void run() {
-                if (editando) {
-                    dao.alterar(ag);
-
-                    for (ItemAgendamento itemAgendamento : itemAgendamentos) {
-                        if (itemAgendamento.getId() != 0) {
-                            itemDao.alterar(itemAgendamento);
-                        } else {
-                            itemAgendamento.setId_agendamento(ag.getId());
-                            itemDao.inserir(itemAgendamento);
-                        }
-                    }
-                } else {
-                    for (ItemAgendamento itemAgendamento : itemAgendamentos) {
-                        itemAgendamento.setId_agendamento(agendamentoId);
-                        itemDao.inserir(itemAgendamento);
-                    }
-                }
-            }
-        }.start();
-
-        limparCampos();
-    }
-
-    public void cancelar(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Excluir agendamento");
+        builder.setTitle("Lançar recebimento");
+        builder.setView(dialogView);
 
-        builder.setMessage("Tem certeza que deseja excluir o agendamento");
-        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Thread() {
-                    public void run() {
-                        dao.remover(agendamento);
-                        finish();
-                    }
-                }.start();
+                String valorRecebido = txtValorRecebido.getText().toString();
+                lancarRecebimento(valorRecebido);
             }
         });
-        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+
         AlertDialog dialog = builder.create();
         dialog.show();
-
     }
 
+    private void lancarRecebimento(String valor) {
+        if (valor.isEmpty()) {
+            Toast.makeText(this, "O valor recebido não pode estar vazio", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double valorRecebido = Double.parseDouble(valor);
+            double valorTotal = calcularValorTotal();
+
+            if (valorTotal <= 0) {
+                Toast.makeText(this, "O valor total dos serviços deve ser maior que zero", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (valorRecebido > valorTotal) {
+                Toast.makeText(this, "O valor recebido não pode ser maior do que o valor total dos serviços", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double valorAtual = agendamento.getRecebido();
+            agendamento.setRecebido(valorAtual + valorRecebido);
+
+            new Thread() {
+                public void run() {
+                    dao.alterar(agendamento);
+                }
+            }.start();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "O valor recebido é inválido", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void carregarServicos() {
         servicoDao.listar().observe(this, new Observer<List<Servico>>() {
@@ -299,8 +259,6 @@ public class TelaAgendamento extends AppCompatActivity {
                 };
                 servicosAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 opcoes_servico.setAdapter(servicosAdapter);
-
-
             }
         });
     }
@@ -348,80 +306,31 @@ public class TelaAgendamento extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_principal, menu);
-        return true;
-    }
-
-    public void abrirDialog(MenuItem mi) {
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_edicao, null);
-
-        double valorCalculado = calcularValorTotal();
-
-        txtValorTotal = (TextView) dialogView.findViewById(R.id.txt_valor_total);
-        txtValorTotal.setText("Valor restante: " + String.format("%.2f", valorCalculado));
-
-        EditText txtValorRecebido = (EditText) dialogView.findViewById(R.id.valor_recebido);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Lançar recebimento");
-        builder.setView(dialogView);
-
-        builder.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+    public void lerData(View view) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this);
+        datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String valorRecebido = txtValorRecebido.getText().toString();
-                lancarRecebimento(valorRecebido);
+            public void onDateSet(DatePicker datePicker, int ano, int mes, int dia) {
+                dataAgendamento = new Date(ano - 1900, mes, dia);
+                showTimePickerDialog();
             }
         });
-
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        datePickerDialog.show();
     }
-
-
-    private void lancarRecebimento(String valor) {
-        if (valor.isEmpty()) {
-            Toast.makeText(this, "O valor recebido não pode estar vazio", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try {
-            double valorRecebido = Double.parseDouble(valor);
-            double valorTotal = calcularValorTotal();
-
-            if (valorTotal <= 0) {
-                Toast.makeText(this, "O valor total dos serviços deve ser maior que zero", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (valorRecebido > valorTotal) {
-                Toast.makeText(this, "O valor recebido não pode ser maior do que o valor total dos serviços", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            double valorAtual = agendamento.getRecebido();
-
-            agendamento.setRecebido(valorAtual + valorRecebido);
-            new Thread(){
-                public void run(){
-                    dao.alterar(agendamento);
+    private void showTimePickerDialog() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hora, int minuto) {
+                if (dataAgendamento != null) {
+                    dataAgendamento.setHours(hora);
+                    dataAgendamento.setMinutes(minuto);
+                    dataAgendamento.setSeconds(0);
+                    txtDataHora.setText(dtFormater.format(dataAgendamento));
                 }
-            }.start();
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "O valor recebido é inválido", Toast.LENGTH_SHORT).show();
-        }
+            }
+        }, 0, 0, true);
+        timePickerDialog.show();
     }
-
     private double calcularValorTotal() {
         double valorTotal = 0;
         for (ItemAgendamento item : itemAgendamentos) {
@@ -445,7 +354,7 @@ public class TelaAgendamento extends AppCompatActivity {
             executorService.shutdown();
         }
 
-        return (valorTotal - valorRecebido) ;
+        return valorTotal - valorRecebido;
     }
 
     private void mostrarDialogoRemover(final ItemAgendamento item) {
@@ -459,7 +368,6 @@ public class TelaAgendamento extends AppCompatActivity {
                 removerItem(item);
             }
         });
-
 
         builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
             @Override
@@ -483,6 +391,47 @@ public class TelaAgendamento extends AppCompatActivity {
         }.start();
     }
 
+    public void confirmar(View view) {
+        String cliente = edCliente.getText().toString();
+        String endereco = edEndereco.getText().toString();
+        String quantidadeStr = edQuantidade.getText().toString();
+
+        if (cliente.isEmpty() || endereco.isEmpty() || quantidadeStr.isEmpty() || dataAgendamento == null || servicoSelecionado == null) {
+            Toast.makeText(this, "Por favor, preencha todos os campos.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double quantidade;
+        try {
+            quantidade = Double.parseDouble(quantidadeStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Quantidade inválida.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Agendamento novoAgendamento = new Agendamento();
+        novoAgendamento.setNomeCliente(cliente);
+        novoAgendamento.setEndereco(endereco);
+        novoAgendamento.setDataHora(dataAgendamento);
+
+        new Thread(() -> {
+            if (editando) {
+                novoAgendamento.setId(agendamento.getId());
+                dao.alterar(novoAgendamento);
+            } else {
+                long idAgendamento = dao.inserir(novoAgendamento);
+                for (ItemAgendamento item : itemAgendamentos) {
+                    item.setId_agendamento(idAgendamento);
+                    itemDao.inserir(item);
+                }
+            }
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Agendamento salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        }).start();
+    }
+
 
     private void limparCampos() {
         edCliente.setText("");
@@ -490,5 +439,4 @@ public class TelaAgendamento extends AppCompatActivity {
         edQuantidade.setText("");
         txtValor.setText("");
     }
-
 }
