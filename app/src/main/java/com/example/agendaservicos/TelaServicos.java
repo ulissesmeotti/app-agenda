@@ -127,7 +127,7 @@ public class TelaServicos extends AppCompatActivity {
     private void removerServico(Servico servico) {
         new AlertDialog.Builder(this)
                 .setTitle("Remover Serviço")
-                .setMessage("Tem certeza que deseja remover este serviço?")
+                .setMessage("Deseja remover este serviço?")
                 .setPositiveButton("Sim", (dialog, which) -> {
                     new Thread() {
                         public void run() {
@@ -158,7 +158,7 @@ public class TelaServicos extends AppCompatActivity {
         try {
             Double.parseDouble(edPreco.getText().toString().trim());
         } catch (NumberFormatException e) {
-            mostrarMensagemErro("Preço deve ser um número válido.");
+            mostrarMensagemErro("Preencha com um número válido.");
             return false;
         }
         return true;
@@ -172,7 +172,6 @@ public class TelaServicos extends AppCompatActivity {
                 .show();
     }
 
-
     class ObservadorServico implements Observer<List<Servico>> {
         @Override
         public void onChanged(List<Servico> servicos) {
@@ -181,6 +180,4 @@ public class TelaServicos extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     }
-
-
 }
