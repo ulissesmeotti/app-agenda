@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TelaAgendamento">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Novo Orçamento"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:layout_margin="5sp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ed_nome_cliente"
+        android:hint="Nome do Cliente"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ed_endereco"
+        android:hint="Endereço"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/data_hora"
+        android:onClick="lerData"
+        android:layout_margin="7sp"
+        android:hint="DD/MM/AAAA - 00:00"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Serviços a realizar:"
+        android:textSize="19sp"
+        android:layout_margin="5sp"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:id="@+id/opcoes_servico"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_unidade"
+            android:layout_weight="1"
+            android:layout_margin="5sp"/>
+        <EditText
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5sp"
+            android:gravity="center"
+            android:inputType="numberDecimal"
+            android:hint="Quantidade"
+            android:id="@+id/ed_quantidade"/>
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_valor"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_margin="5sp"/>
+    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:onClick="adicionar"
+        android:text="Adicionar"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="2"
+        android:id="@+id/lista_servico"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btn_cancelar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancelar"
+            android:onClick="cancelar"
+            android:maxWidth="150dp"
+            android:minWidth="100dp"
+            android:visibility="gone"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Confirmar"
+            android:onClick="confirmar"
+            android:maxWidth="150dp"
+            android:minWidth="100dp"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
