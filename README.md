@@ -1,1 +1,1 @@
-# app-agenda
+Java project using Android Studio for service scheduling.
